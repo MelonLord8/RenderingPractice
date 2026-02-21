@@ -1,0 +1,3 @@
+C:/RenderPractice/build/CMakeFiles/spheres.dir
+C:/RenderPractice/build/CMakeFiles/edit_cache.dir
+C:/RenderPractice/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,26 @@
+[
+{
+  "directory": "C:/RenderPractice/build",
+  "command": "C:\\mingw64\\bin\\g++.exe  @CMakeFiles/spheres.dir/includes_CXX.rsp -g -o CMakeFiles\\spheres.dir\\src\\main.cpp.obj -c C:\\RenderPractice\\src\\main.cpp",
+  "file": "C:/RenderPractice/src/main.cpp",
+  "output": "CMakeFiles/spheres.dir/src/main.cpp.obj"
+},
+{
+  "directory": "C:/RenderPractice/build",
+  "command": "C:\\mingw64\\bin\\gcc.exe  @CMakeFiles/spheres.dir/includes_C.rsp -g -o CMakeFiles\\spheres.dir\\src\\glad.c.obj -c C:\\RenderPractice\\src\\glad.c",
+  "file": "C:/RenderPractice/src/glad.c",
+  "output": "CMakeFiles/spheres.dir/src/glad.c.obj"
+},
+{
+  "directory": "C:/RenderPractice/build",
+  "command": "C:\\mingw64\\bin\\g++.exe  @CMakeFiles/spheres.dir/includes_CXX.rsp -g -o CMakeFiles\\spheres.dir\\src\\Triangle.cpp.obj -c C:\\RenderPractice\\src\\Triangle.cpp",
+  "file": "C:/RenderPractice/src/Triangle.cpp",
+  "output": "CMakeFiles/spheres.dir/src/Triangle.cpp.obj"
+},
+{
+  "directory": "C:/RenderPractice/build",
+  "command": "C:\\mingw64\\bin\\g++.exe  @CMakeFiles/spheres.dir/includes_CXX.rsp -g -o CMakeFiles\\spheres.dir\\src\\Sphere.cpp.obj -c C:\\RenderPractice\\src\\Sphere.cpp",
+  "file": "C:/RenderPractice/src/Sphere.cpp",
+  "output": "CMakeFiles/spheres.dir/src/Sphere.cpp.obj"
+}
+]
