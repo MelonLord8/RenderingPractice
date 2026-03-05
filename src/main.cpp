@@ -34,9 +34,17 @@ int main(){
     vector<Sphere *> spheres;
     for (int i = 0; i < NUM_SPHERES; i++)
     {
-        vector<float> coords = {random_float(-1.0f, 1.0f), random_float(-1.0f, 1.0f), random_float(-1.0f, 0.0f)};
+        vector<float> coords = {random_float(-1.0f, 1.0f), random_float(-1.0f, 0.0f), random_float(-1.0f, 1.0f)};
         spheres.push_back(new Sphere(coords, RADIUS, LOD));
     }
+
+    unsigned int VAO;
+    unsigned int VBO;
+    unsigned int EBO;
+    unsigned int num_elements;
+
+    send_data_to_gpu(spheres, VAO, VBO, EBO, num_elements);
+
 
     using clock = std::chrono::high_resolution_clock;
 
@@ -48,18 +56,19 @@ int main(){
         float deltaTime = delta.count();
 
         std::cout << "Delta time: " << deltaTime << " seconds, FPS: " << 1/deltaTime <<std::endl;
-
         lastTime = currentTime;
+
         glfwPollEvents();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shader_program);
-        for (Sphere* sphere : spheres){
-            sphere-> draw();
-        }
+
+        draw(VAO, num_elements);
+
         glfwSwapBuffers(window);
     }
 
     glDeleteProgram(shader_program);
+    deallocate_buffers(VAO, VBO, EBO);
     glfwTerminate();
     return 0;
 }
@@ -127,4 +136,47 @@ float random_float(const float &min, const float &max){
     std::uniform_real_distribution<float> dist(min, max);
 
     return dist(rng);
+}
+
+void send_data_to_gpu(const vector<Sphere*> &spheres, unsigned int &VAO, unsigned int &VBO, unsigned int &EBO, unsigned int &num_elements){
+    vector<float> data{};
+    vector<unsigned int> elements{};
+    unsigned int offset = 0;
+    for (const Sphere* sphere: spheres){
+        data.insert(data.end(), sphere->vertex_data.begin(), sphere->vertex_data.end());
+        for (unsigned int element : sphere->triangle_elements){
+            elements.push_back(element + offset);
+        }
+        
+        offset = data.size() / 6;
+    }
+    num_elements = elements.size();
+
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+    
+    glGenBuffers(1, &VBO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, data.size()*sizeof(float), data.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void *) 0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof(unsigned int), elements.data(), GL_STATIC_DRAW);
+}
+
+void draw(const unsigned int &VAO, const unsigned int &num_elements){
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, num_elements, GL_UNSIGNED_INT, 0);
+}
+
+void deallocate_buffers(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO){
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
 }

@@ -1,48 +1,39 @@
 #include "Sphere.h"
 
 Sphere::Sphere(const vector<float> &center, const float &radius, const unsigned int &LOD){
-    
-    vector<float> vertices;
     this-> center = center;
-    for (int i = 0; i < 2*LOD - 1; i++){
-        for (int j = 0; j < LOD - 1; j++){
-            vertices = vector<float>{   center[0] + (float)(radius*cos(M_PI*i/LOD)*sin(2*M_PI*j/LOD)), // Vertex 1
-                                        center[2] + (float)(radius*cos(2*M_PI*j/LOD)),
-                                        center[1] + (float)(radius*sin(M_PI*i/LOD)*sin(2*M_PI*j/LOD)),
-                                        center[0] + (float)(radius*cos(M_PI*(i + 1)/LOD)*sin(2*M_PI*j/LOD)), // Vertex 2
-                                        center[2] + (float)(radius*cos(2*M_PI*j/LOD)),
-                                        center[1] + (float)(radius*sin(M_PI*(i + 1)/LOD)*sin(2*M_PI*j/LOD)),
-                                        center[0] + (float)(radius*cos(M_PI*i/LOD)*sin(2*M_PI*(j + 1)/LOD)), // Vertex 3
-                                        center[2] + (float)(radius*cos(2*M_PI*(j + 1)/LOD)),
-                                        center[1] + (float)(radius*sin(M_PI*i/LOD)*sin(2*M_PI*(j + 1)/LOD))};
+    for (int i = 0; i <= 2*LOD; i++){
+        for (int j = 0; j <= LOD; j++){
+            double theta = M_PI*j/LOD;
+            double phi = M_PI*i/LOD;
+            vector<float> vertex = vector<float>{   center[0] + (float)(radius*cos(phi)*sin(theta)), 
+                                                    center[2] + (float)(radius*cos(theta)),
+                                                    center[1] + (float)(radius*sin(phi)*sin(theta))};
 
-            triangles.push_back(new Triangle(vertices, get_triangle_colour(vertices)));
-            
-            vertices = vector<float>{   center[0] + (float)(radius*cos(M_PI*(i + 1)/LOD)*sin(2*M_PI*(j + 1)/LOD)), // Vertex 1
-                                        center[2] + (float)(radius*cos(2*M_PI*(j + 1)/LOD)),
-                                        center[1] + (float)(radius*sin(M_PI*(i + 1)/LOD)*sin(2*M_PI*(j + 1)/LOD)),
-                                        center[0] + (float)(radius*cos(M_PI*(i + 1)/LOD)*sin(2*M_PI*j/LOD)), // Vertex 2
-                                        center[2] + (float)(radius*cos(2*M_PI*j/LOD)),
-                                        center[1] + (float)(radius*sin(M_PI*(i + 1)/LOD)*sin(2*M_PI*j/LOD)),
-                                        center[0] + (float)(radius*cos(M_PI*i/LOD)*sin(2*M_PI*(j + 1)/LOD)), // Vertex 3
-                                        center[2] + (float)(radius*cos(2*M_PI*(j + 1)/LOD)),
-                                        center[1] + (float)(radius*sin(M_PI*i/LOD)*sin(2*M_PI*(j + 1)/LOD))};
+            vector<float> colour = this-> get_vertex_colour(vertex);
 
-            triangles.push_back(new Triangle(vertices, get_triangle_colour(vertices)));
+            this->vertex_data.insert(vertex_data.end(), vertex.begin(), vertex.end());
+            this->vertex_data.insert(vertex_data.end(), colour.begin(), colour.end());
+        }
+    }
+
+    for (int i = 0; i < 2*LOD; i++){
+        for (int j = 0; j < LOD; j++){
+            this->triangle_elements.push_back(i*(LOD + 1) + j);
+            this->triangle_elements.push_back((i + 1)*(LOD + 1) + j);
+            this->triangle_elements.push_back(i*(LOD + 1) + j + 1);
+
+            this->triangle_elements.push_back((i + 1)*(LOD + 1) + j);
+            this->triangle_elements.push_back(i*(LOD + 1) + j + 1);
+            this->triangle_elements.push_back((i + 1)*(LOD + 1) + j + 1);
         }
     }
 }
 
-void Sphere::draw(){
-    for(Triangle* triangle : triangles){
-        triangle->draw();
-    }
-}
-
-vector<float> Sphere::get_triangle_colour(const vector<float> &vertices){
-    vector<float> normal{   (vertices[0] + vertices[3] + vertices[6]) / 3 - center[0],
-                            (vertices[1] + vertices[4] + vertices[7]) / 3 - center[2],
-                            (vertices[2] + vertices[5] + vertices[8]) / 3 - center[1] };
+vector<float> Sphere::get_vertex_colour(const vector<float> &vertex){
+    vector<float> normal{   vertex[0] - center[0],
+                            vertex[1] - center[2],
+                            vertex[2] - center[1] };
     float mag = sqrt(normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2]);
     normal[0] = normal[0] / mag;
     normal[1] = normal[1] / mag;
@@ -55,8 +46,4 @@ vector<float> Sphere::get_triangle_colour(const vector<float> &vertices){
     };
 }
 
-Sphere::~Sphere(){
-    for(Triangle* triangle : triangles){
-        delete triangle;
-    }
-}
+Sphere::~Sphere(){}
