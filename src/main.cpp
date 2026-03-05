@@ -38,8 +38,18 @@ int main(){
         spheres.push_back(new Sphere(coords, RADIUS, LOD));
     }
 
+    using clock = std::chrono::high_resolution_clock;
 
+    auto lastTime = clock::now();
     while (!glfwWindowShouldClose(window)){
+        auto currentTime = clock::now();
+
+        std::chrono::duration<float> delta = currentTime - lastTime;
+        float deltaTime = delta.count();
+
+        std::cout << "Delta time: " << deltaTime << " seconds, FPS: " << 1/deltaTime <<std::endl;
+
+        lastTime = currentTime;
         glfwPollEvents();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shader_program);

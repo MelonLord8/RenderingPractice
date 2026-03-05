@@ -14,7 +14,7 @@
 using namespace std;
 
 #define NUM_SPHERES 10
-#define LOD 5
+#define LOD 10
 #define RADIUS 0.1 
 
 int main();

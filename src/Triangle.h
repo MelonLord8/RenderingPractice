@@ -5,10 +5,12 @@
 using namespace std;
 class Triangle{
     public:
-        Triangle(const vector<float> &vertices);
+        Triangle(const vector<float> &vertices, const vector<float> &colour);
         ~Triangle();
         void draw();
 
     private:
-        unsigned int VBO, VAO, vertex_count;
+        unsigned int VAO, vertex_count, VBO;
+        vector<float> color;
+        
 };
